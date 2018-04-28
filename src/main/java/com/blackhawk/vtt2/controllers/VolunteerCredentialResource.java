@@ -67,7 +67,7 @@ public class VolunteerCredentialResource {
         }
         return ResponseEntity.ok().build(); // 200 = username can be assigned
     }
-    //login
+  /*  //login
     @PostMapping("/volunteer-credential/login")
     public ResponseEntity<Object>login(@RequestBody VolunteerCredential volunteerCredential){
         String password = volunteerCredential.getPassword();
@@ -78,7 +78,7 @@ public class VolunteerCredentialResource {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(401).build();
-    }
+    }*/
 
 
     //create a volunteer credential, ie username/password
