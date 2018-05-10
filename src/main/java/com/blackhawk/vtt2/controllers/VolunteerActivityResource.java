@@ -28,7 +28,7 @@ public class VolunteerActivityResource {
 
     @Autowired
     private VolunteerActivityRepository volunteerActivityRepository;
-
+    //returns all activities in the database ***WORKS***
     @GetMapping("/volunteer-activity")
     public List<VolunteerActivityResponse> retrieveAllActivities(){
         Iterable<VolunteerActivity> vol =volunteerActivityRepository.findAll();
@@ -39,7 +39,7 @@ public class VolunteerActivityResource {
         }
         return activities;
     }
-    //returns all active activities
+    //returns all active activities ***WORKS***
     @GetMapping("/volunteer-activity/active")
     public List<VolunteerActivityResponse> retrieveActiveActivities(){
         Iterable<VolunteerActivity> activity = volunteerActivityRepository.getActiveActivities(null);
@@ -50,7 +50,7 @@ public class VolunteerActivityResource {
         }
         return activities;
     }
-
+    //adds an activity to the database ***WORKS***
     @PostMapping("/volunteer-activity/add")
     public ResponseEntity<Object> createActivity(@RequestBody VolunteerActivity volunteerActivity){
 
@@ -60,7 +60,7 @@ public class VolunteerActivityResource {
 
         return ResponseEntity.created(location).build();
     }
-
+    //edits an existing activity ***Works***
     @PutMapping("/volunteer-activity/edit")
     public ResponseEntity<Object> editActivity(@RequestBody VolunteerActivity volunteerActivity){
         Integer activityId = volunteerActivity.getVolunteerActivityId();

@@ -24,5 +24,7 @@ public interface VolunteerRepository extends CrudRepository<Volunteer, Integer>{
     @Query("SELECT v FROM Volunteer v WHERE v.volunteerCredential = :volunteerCredential")
     public Volunteer getByVolCred(@Param("volunteerCredential")VolunteerCredential volunteerCredential);
 
+
+
 }
 

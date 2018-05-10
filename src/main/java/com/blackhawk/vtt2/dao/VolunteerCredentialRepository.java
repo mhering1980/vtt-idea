@@ -27,7 +27,13 @@ public interface VolunteerCredentialRepository extends CrudRepository<VolunteerC
     public VolunteerCredential findByUsername(@Param("username") String username);
 
     @Query("SELECT vc FROM VolunteerCredential vc WHERE vc.volunteer = :volunteer")
-    public VolunteerCredential getVolByCred(@Param("volunteer") Volunteer volunteer);
+    public VolunteerCredential findByVolId(@Param("volunteer") Volunteer volunteer);
+
+   /* @Query("SELECT vc FROM VolunteerCredential vc WHERE vc.username = :volunteer")
+    public VolunteerCredential getVolByCred(@Param("username") String username);
+
+    @Query("SELECT vc.volunteerId FROM VolunteerCredential vc WHERE vc.username = :username")
+    public Integer getVolId(@Param("username") String username);*/
 
    /* @Query("SELECT vc FROM VolunteerCredential vc WHERE vc.username = :username")
     public Iterable<VolunteerCredential> checkUsername(@Param("username") String username);*/

@@ -1,7 +1,6 @@
 package com.blackhawk.vtt2;
 
 import com.blackhawk.vtt2.util.HashPasswordEncoder;
-import javafx.application.Application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +14,7 @@ public class Vtt2Application extends SpringBootServletInitializer{
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class);
+        return application.sources(Vtt2Application.class);
     }
 //    @Bean
 //    public BCryptPasswordEncoder bCryptPasswordEncoder(){

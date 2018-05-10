@@ -1,11 +1,8 @@
 package com.blackhawk.vtt2.controllers;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.security.Principal;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -17,6 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.blackhawk.vtt2.model.Volunteer;
 import com.blackhawk.vtt2.model.response.VolunteerResponse;
 import com.blackhawk.vtt2.dao.VolunteerRepository;
+import com.blackhawk.vtt2.util.FromToken;
+
 
 @RestController
 public class VolunteerResource {
@@ -24,7 +23,14 @@ public class VolunteerResource {
     @Autowired
     private VolunteerRepository volunteerRepository;
 
+    FromToken ft = new FromToken();
 
+    //returns the volunteer information for the person logged in.  *******WORKS
+    @GetMapping("/volunteer/me")
+    public List<VolunteerResponse> retrieveUser(Principal principal){
+        return retrieveUser(ft.getVolunteerId(principal));
+    }
+    //returns volunteer information based on a volunteerId  *****WORKS******
     @GetMapping("/volunteer/{id}")
     public List<VolunteerResponse> retrieveUser(@PathVariable Integer id){
         Optional<Volunteer> vol = volunteerRepository.findById(id);
@@ -35,7 +41,7 @@ public class VolunteerResource {
         volunteer.add(VolunteerResponse.from(vol.get()));
         return volunteer;
     }
-
+    //returns all volunteers ****WORKS
     @GetMapping("/volunteer")
     public List<VolunteerResponse> retrieveAllVolunteers(){
         Iterable<Volunteer> vol =volunteerRepository.findAll();
@@ -46,7 +52,8 @@ public class VolunteerResource {
         }
         return volunteers;
     }
-    //need to fix the whole return everything thing
+    //****works
+    //admin method returns a volunteer based on first and last name required, dob optional
     @GetMapping("/volunteer/search-name")
     public List<VolunteerResponse> searchNameDate(@RequestParam("firstName")String firstName, @RequestParam("lastName" ) String lastName,
                                               @RequestParam(name="birthDate", required = false) String birthDate)throws ParseException{
@@ -70,8 +77,8 @@ public class VolunteerResource {
             return volunteer;
         }
     }
-    //bdate is subtracting 1 from the day when inserting into database.
-    @PostMapping("/volunteer/")
+    //adds a new volunteer to the database.  ****WORKS***
+    @PostMapping("/volunteer")
     public ResponseEntity<Object> createVolunteer(@RequestBody Volunteer volunteer){
         Date date = volunteer.getBirthDate();
         volunteer.setStartDate(new Date());
@@ -82,7 +89,7 @@ public class VolunteerResource {
 
         return ResponseEntity.created(location).build();
     }
-//birthDate is entered as one day earlier than what was given
+    //admin method updates a volunteer in the database ***** WORKS
     @PutMapping("/volunteer/{id}")
     public ResponseEntity<Object> updateVolunteer(@RequestBody Volunteer volunteer, @PathVariable Integer id){
         Optional<Volunteer> vol = volunteerRepository.findById(id);

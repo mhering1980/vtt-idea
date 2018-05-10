@@ -21,6 +21,6 @@ public interface VolunteerActivityRepository extends CrudRepository<VolunteerAct
     @Query("SELECT va FROM VolunteerActivity va WHERE va.volunteerActivityId = :volunteerActivityId")
     public VolunteerActivity getActivity(@Param("volunteerActivityId")Integer volunteerActivityId);
 
-    @Query("SELECT va FROM VolunteerActivity va WHERE va.volunteerActivityId = :volunteerActivityId")
-    public VolunteerActivity getActId(@Param("volunteerActivityId") Integer volunteerActivityId);
+    /*@Query("SELECT va FROM VolunteerActivity va WHERE va.volunteerActivityId = :volunteerActivityId")
+    public VolunteerActivity getActId(@Param("volunteerActivityId") Integer volunteerActivityId);*/
 }

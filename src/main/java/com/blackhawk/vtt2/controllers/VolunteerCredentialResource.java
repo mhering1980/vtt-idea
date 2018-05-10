@@ -1,11 +1,13 @@
 package com.blackhawk.vtt2.controllers;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackhawk.vtt2.util.FromToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +37,9 @@ public class VolunteerCredentialResource {
     @Autowired
     private VolunteerRepository volunteerRepository;
 
-    //returns all volunteer credentials
+    FromToken ft = new FromToken();
+
+    //returns all volunteer credentials ***WORKS
     @GetMapping("/volunteer-credential")
     public List<VolunteerCredentialResponse> retrieveAllVolunteerCredentials(){
         Iterable<VolunteerCredential> vol = volunteerCredentialRepository.findAll();
@@ -46,7 +50,7 @@ public class VolunteerCredentialResource {
         }
         return entries;
     }
-    //returns a volunteer credential for specific id
+    //returns a volunteer credential for specific id ***WORKS***
     @GetMapping("/volunteer-credential/{id}")
     public List<VolunteerCredentialResponse> retrieveUser(@PathVariable Integer id){
         Iterable<VolunteerCredential> volCred = volunteerCredentialRepository.getById(id);
@@ -59,15 +63,16 @@ public class VolunteerCredentialResource {
 
         return entries;
     }
-    @GetMapping("/volunteer-credential/username")
-    public ResponseEntity<Object> testUsername(@RequestParam(name="username") String username){
+    //returns a 401 if the username exists in db and 200 if id does not***WORKS
+    @GetMapping("/volunteer-credential/username/{username}")
+    public ResponseEntity<Object> testUsername(@PathVariable String username){
         Iterable<VolunteerCredential> nameSearch = volunteerCredentialRepository.getByUsername(username);
         if(nameSearch.iterator().hasNext()) {
             return ResponseEntity.status(401).build(); // 401 = Username exists in the db
         }
         return ResponseEntity.ok().build(); // 200 = username can be assigned
     }
-  /*  //login
+  /*  //login not needed with jwt tokenization classes
     @PostMapping("/volunteer-credential/login")
     public ResponseEntity<Object>login(@RequestBody VolunteerCredential volunteerCredential){
         String password = volunteerCredential.getPassword();
@@ -81,10 +86,10 @@ public class VolunteerCredentialResource {
     }*/
 
 
-    //create a volunteer credential, ie username/password
+    //create a volunteer credential, ie username/password ***WORKS
     @PostMapping("/volunteer-credential/credential")
-    public ResponseEntity<Object> createVolunteerCredential(@RequestBody VolunteerCredential volunteerCredential, @RequestParam(name="volunteerId")Integer volunteerId){
-        volunteerCredential.setVolunteer(volunteerRepository.getVolById(volunteerId));
+    public ResponseEntity<Object> createVolunteerCredential(@RequestBody VolunteerCredential volunteerCredential, @RequestParam(name="volId")Integer volId){
+        volunteerCredential.setVolunteer(volunteerRepository.getVolById(volId));
         String password = volunteerCredential.getPassword();
         String hashedPassword = HashedPasswords.hashPassword(password);
         volunteerCredential.setPassword(hashedPassword);
@@ -97,10 +102,16 @@ public class VolunteerCredentialResource {
 
     }
 
-    //update volunteer credential i.e. adminReset password
+    //update volunteer credential i.e. adminReset password and volunteer reset password *** WORKS***
     @PutMapping("/volunteer-credential/reset")
-    public ResponseEntity<Object> updateVolunteerCredential(@RequestBody VolunteerCredential volunteerCredential){
-        String username = volunteerCredential.getUsername();
+    public ResponseEntity<Object> updateVolunteerCredential(@RequestBody VolunteerCredential volunteerCredential, Principal principal){
+        String username;
+        if(volunteerCredential.getUsername() !=null) {
+            username = volunteerCredential.getUsername();
+        }else{
+            Integer id = ft.getVolunteerId(principal);
+            username = volunteerCredentialRepository.findByVolId(volunteerRepository.getVolById(id)).getUsername();
+        }
         Iterable<VolunteerCredential> volCred = volunteerCredentialRepository.getByUsername(username);
         if (!volCred.iterator().hasNext()){
             return ResponseEntity.notFound().build();
@@ -112,20 +123,6 @@ public class VolunteerCredentialResource {
         volunteerCredentialRepository.save(vc);
         return ResponseEntity.ok().build();
     }
-    //can I send 2 passwords in the same requestbody?
-    //reset for volunteer page
-    @PutMapping("/volunteer-credential/vol-reset")
-    public ResponseEntity<Object> updateVolunteerPassword(@RequestBody VolunteerCredential volunteerCredential){
-        String username = volunteerCredential.getUsername();
-        String password = volunteerCredential.getPassword();
-        String hashedPassword = HashedPasswords.hashPassword(password);
-        Iterable<VolunteerCredential> credentials = volunteerCredentialRepository.getByUsernameAndPassword(username, hashedPassword);
-        if(!credentials.iterator().hasNext()){
-            return ResponseEntity.status(401).build();
-        }else{
-            VolunteerCredential vc = credentials.iterator().next();
-            return ResponseEntity.status(200).build();
-        }
-    }
+
 }
 
